@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SalonFlow 線上即時預約</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "SF Pro Text", "Helvetica Neue", "Noto Sans TC", sans-serif; }
+        body { background-color: #fff1f2; color: #0f172a; padding: 15px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        
+        /* RWD 容器：在手機上會滿版，在桌機上會維持舒服的寬度 */
+        .client-container { width: 100%; max-width: 600px; background: #ffffff; border-radius: 16px; box-shadow: 0 10px 25px rgba(244,63,94,0.1); overflow: hidden; padding: 30px; }
+        
+        h1 { font-size: 24px; color: #e11d48; margin-bottom: 5px; text-align: center; }
+        .subtitle { font-size: 14px; color: #64748b; text-align: center; margin-bottom: 25px; }
+        
+        .promo-card { background: #fff1f2; border: 1px dashed #f43f5e; padding: 15px; border-radius: 12px; margin-bottom: 25px; color: #9f1239; font-size: 14px; line-height: 1.5; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 14px; font-weight: 600; color: #334155; margin-bottom: 8px; }
+        .form-group input, .form-group select { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; background-color: #f8fafc; transition: border 0.2s; }
+        .form-group input:focus, .form-group select:focus { border-color: #f43f5e; outline: none; }
+        
+        .btn-submit { width: 100%; background: #f43f5e; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        .btn-submit:hover { background: #e11d48; }
+        .receipt-card { background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 12px; padding: 20px; margin-top: 25px; border-left: 5px solid #10b981; }
+    </style>
+</head>
+<body>
+
+    <div class="client-container">
+        <h1>💇 SalonFlow 線上預約系統</h1>
+        <div class="subtitle">24小時即時連線智慧卡位</div>
+
+        <div class="promo-card">
+            🎁 <strong>【離峰慶優惠】</strong> 每日 13:00 - 16:00 來店，結帳系統自動享 <strong>85折</strong> 促銷優惠！
+        </div>
+
+        <form id="reserve-form">
+            <div class="form-group">
+                <label>顧客姓名</label>
+                <input type="text" id="c-name" placeholder="請輸入您的姓名" required>
+            </div>
+            <div class="form-group">
+                <label>手機號碼</label>
+                <input type="tel" id="c-phone" placeholder="0912-345678" required>
+            </div>
+            <div class="form-group">
+                <label>指定設計師</label>
+                <select id="c-designer">
+                    <option value="Andy">Andy (總監 - 精修男士/極短髮)</option>
+                    <option value="Bella">Bella (資深 - 韓系燙髮/線條染)</option>
+                    <option value="Chris">Chris (專業 - 歐美漂染/頭皮理療)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>預約時段</label>
+                <select id="c-time">
+                    <option value="11:00">11:00</option>
+                    <option value="12:00">12:00</option>
+                    <option value="13:00">13:00 (🔥享85折)</option>
+                    <option value="14:00">14:00 (🔥享85折)</option>
+                    <option value="15:00">15:00 (🔥享85折)</option>
+                    <option value="16:00">16:00 (🔥享85折)</option>
+                    <option value="17:00">17:00</option>
+                    <option value="18:00">18:00</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>美髮項目</label>
+                <select id="c-service">
+                    <option value="洗剪服務 ($600)">洗剪服務 ($600)</option>
+                    <option value="時尚染髮 ($2000)">時尚染髮 ($2000)</option>
+                    <option value="溫塑燙髮 ($3000)">溫塑燙髮 ($3000)</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-submit">確認並送出預約</button>
+        </form>
+
+        <div id="success-box" style="display:none;" class="receipt-card">
+            <h4 style="color:#065f46; margin-bottom:8px;">🎉 您的預約已成功保留！</h4>
+            <div id="receipt-details" style="font-size:14px; color:#1e293b; line-height:1.6;"></div>
+        </div>
+    </div>
+
+    <script>
+        // 💡 因為網頁跟 C# 後端住在同個專案，這裡用「相對路徑」即可
+        const API_URL = "/api/booking";
+
+        // 1. 初始化：從 C# 後端撈取設計師名單（目前 C# 專案我們先把清單寫死在前端展示，確保 Demo 不卡死）
+        function initFrontDesignerSelect() {
+            const staffList = [
+                { name: "Andy", title: "總監 - 精修男士/極短髮" },
+                { name: "Bella", title: "資深 - 韓系燙髮/線條染" },
+                { name: "Chris", title: "專業 - 歐美漂染/頭皮理療" }
+            ];
+            const selectEl = document.getElementById('c-designer');
+            selectEl.innerHTML = '';
+            staffList.forEach(staff => {
+                const opt = document.createElement('option');
+                opt.value = staff.name;
+                opt.innerText = `${staff.name} (${staff.title})`;
+                selectEl.appendChild(opt);
+            });
+        }
+        initFrontDesignerSelect();
+
+        // 2. 監聽表單送出事件
+        document.getElementById('reserve-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const name = document.getElementById('c-name').value;
+            const phone = document.getElementById('c-phone').value;
+            const designer = document.getElementById('c-designer').value;
+            const time = document.getElementById('c-time').value;
+            const service = document.getElementById('c-service').value;
+
+            // 計算離峰優惠金額
+            const hour = parseInt(time.split(':')[0]);
+            const isPromo = (hour >= 13 && hour <= 16);
+            const originalPrice = Number(service.match(/\d+/)[0]);
+            const finalPrice = isPromo ? Math.round(originalPrice * 0.85) : originalPrice;
+
+            // 🚀 重頭戲：發送非同步請求給 C# 後端 API，讓後端去檢查資料庫並寫入
+            try {
+                let response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        Name: name,
+                        Phone: phone,
+                        Time: time,
+                        Service: service,
+                        Designer: designer,
+                        FinalPrice: finalPrice
+                    })
+                });
+
+                let result = await response.json();
+
+                // 💡 讀取 C# 回傳的防呆結果
+                if (result.success === false) {
+                    alert(`⚠️ 預約失敗！\n${result.message}`);
+                    return;
+                }
+
+                // 產出客戶確認收據
+                document.getElementById('success-box').style.display = 'block';
+                document.getElementById('receipt-details').innerHTML = `
+                        📌 <strong>預約顧客：</strong> ${name}<br>
+                        ⏱️ <strong>預約時段：</strong> 今日 ${time} ${isPromo ? '(<span style="color:#d97706;font-weight:bold;">已享離峰85折</span>)' : ''}<br>
+                        ✂️ <strong>指定設計師：</strong> ${designer}<br>
+                        💰 <strong>現場估計金額：</strong> $${finalPrice} 元
+                    `;
+                this.reset();
+                alert("🎉 恭喜您預約成功！資料已同步儲存至微軟內建 LocalDB 資料庫。");
+
+            } catch (error) {
+                console.error("連線錯誤:", error);
+                alert("⚠️ 系統連線失敗，請確認 Visual Studio 後端服務是否處於啟動狀態。");
+            }
+        });
+    </script>
+</body>
+</html>

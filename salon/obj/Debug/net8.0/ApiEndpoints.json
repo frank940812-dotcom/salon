@@ -1,0 +1,28 @@
+[
+  {
+    "ContainingType": "SalonSystem.Controllers.BookingController",
+    "Method": "CreateAppointment",
+    "RelativePath": "api/Booking",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "SalonSystem.Controllers.BookingModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SalonSystem.Controllers.BookingController",
+    "Method": "GetAllAppointments",
+    "RelativePath": "api/Booking",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  }
+]
