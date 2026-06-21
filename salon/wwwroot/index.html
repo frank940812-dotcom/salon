@@ -5,24 +5,111 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SalonFlow 線上即時預約</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "SF Pro Text", "Helvetica Neue", "Noto Sans TC", sans-serif; }
-        body { background-color: #fff1f2; color: #0f172a; padding: 15px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "SF Pro Text", "Helvetica Neue", "Noto Sans TC", sans-serif;
+        }
+
+        body {
+            background-color: #fff1f2;
+            color: #0f172a;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
         /* RWD 容器：在手機上會滿版，在桌機上會維持舒服的寬度 */
-        .client-container { width: 100%; max-width: 600px; background: #ffffff; border-radius: 16px; box-shadow: 0 10px 25px rgba(244,63,94,0.1); overflow: hidden; padding: 30px; }
-        
-        h1 { font-size: 24px; color: #e11d48; margin-bottom: 5px; text-align: center; }
-        .subtitle { font-size: 14px; color: #64748b; text-align: center; margin-bottom: 25px; }
-        
-        .promo-card { background: #fff1f2; border: 1px dashed #f43f5e; padding: 15px; border-radius: 12px; margin-bottom: 25px; color: #9f1239; font-size: 14px; line-height: 1.5; }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; font-size: 14px; font-weight: 600; color: #334155; margin-bottom: 8px; }
-        .form-group input, .form-group select { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; background-color: #f8fafc; transition: border 0.2s; }
-        .form-group input:focus, .form-group select:focus { border-color: #f43f5e; outline: none; }
-        
-        .btn-submit { width: 100%; background: #f43f5e; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
-        .btn-submit:hover { background: #e11d48; }
-        .receipt-card { background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 12px; padding: 20px; margin-top: 25px; border-left: 5px solid #10b981; }
+        .client-container {
+            width: 100%;
+            max-width: 600px;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(244,63,94,0.1);
+            overflow: hidden;
+            padding: 30px;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #e11d48;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #64748b;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .promo-card {
+            background: #fff1f2;
+            border: 1px dashed #f43f5e;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            color: #9f1239;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+            .form-group label {
+                display: block;
+                font-size: 14px;
+                font-weight: 600;
+                color: #334155;
+                margin-bottom: 8px;
+            }
+
+            .form-group input, .form-group select {
+                width: 100%;
+                padding: 12px;
+                border: 1px solid #cbd5e1;
+                border-radius: 8px;
+                font-size: 15px;
+                background-color: #f8fafc;
+                transition: border 0.2s;
+            }
+
+                .form-group input:focus, .form-group select:focus {
+                    border-color: #f43f5e;
+                    outline: none;
+                }
+
+        .btn-submit {
+            width: 100%;
+            background: #f43f5e;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+            .btn-submit:hover {
+                background: #e11d48;
+            }
+
+        .receipt-card {
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 25px;
+            border-left: 5px solid #10b981;
+        }
     </style>
 </head>
 <body>
@@ -32,7 +119,7 @@
         <div class="subtitle">24小時即時連線智慧卡位</div>
 
         <div class="promo-card">
-            🎁 <strong>【離峰慶優惠】</strong> 每日 13:00 - 16:00 來店，結帳系統自動享 <strong>85折</strong> 促銷優惠！
+            🎁 <strong>【離峰慶優惠】</strong> 每日 13:00 - 16:00 來店，結帳系統 automatic 享 <strong>85折</strong> 促銷優惠！
         </div>
 
         <form id="reserve-form">
@@ -83,10 +170,10 @@
     </div>
 
     <script>
-        // 💡 因為網頁跟 C# 後端住在同個專案，這裡用「相對路徑」即可
+        // 💡 修正 1：明確鎖定遠端 Render 的 API 完整路徑，不依賴本機環境
         const API_URL = "https://salon-h714.onrender.com/api/booking";
 
-        // 1. 初始化：從 C# 後端撈取設計師名單（目前 C# 專案我們先把清單寫死在前端展示，確保 Demo 不卡死）
+        // 1. 初始化設計師選單
         function initFrontDesignerSelect() {
             const staffList = [
                 { name: "Andy", title: "總監 - 精修男士/極短髮" },
@@ -119,24 +206,30 @@
             const originalPrice = Number(service.match(/\d+/)[0]);
             const finalPrice = isPromo ? Math.round(originalPrice * 0.85) : originalPrice;
 
-            // 🚀 重頭戲：發送非同步請求給 C# 後端 API，讓後端去檢查資料庫並寫入
             try {
                 let response = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
+                    // 💡 修正 2：大小寫欄位雙重打包發送，徹底防呆，確保雲端 C# 後端完美對接
                     body: JSON.stringify({
                         Name: name,
+                        name: name,
                         Phone: phone,
+                        phone: phone,
                         Time: time,
+                        time: time,
                         Service: service,
+                        service: service,
                         Designer: designer,
-                        FinalPrice: finalPrice
+                        designer: designer,
+                        FinalPrice: finalPrice,
+                        finalPrice: finalPrice
                     })
                 });
 
                 let result = await response.json();
 
-                // 💡 讀取 C# 回傳的防呆結果
+                // 讀取 C# 回傳的結果
                 if (result.success === false) {
                     alert(`⚠️ 預約失敗！\n${result.message}`);
                     return;
@@ -151,13 +244,8 @@
                         💰 <strong>現場估計金額：</strong> $${finalPrice} 元
                     `;
                 this.reset();
-                alert("🎉 恭喜您預約成功！資料已同步儲存至微軟內建 LocalDB 資料庫。");
+                alert("🎉 恭喜您預約成功！資料已同步遠端處理完畢。");
 
             } catch (error) {
                 console.error("連線錯誤:", error);
-                alert("⚠️ 系統連線失敗，請確認 Visual Studio 後端服務是否處於啟動狀態。");
-            }
-        });
-    </script>
-</body>
-</html>
+                alert("⚠️ 系統連線失敗，請確認
