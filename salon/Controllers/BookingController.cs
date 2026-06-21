@@ -1,57 +1,39 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
-namespace SalonSystem.Controllers // 👈 如果你的專案名稱不是 SalonSystem，請改成你的專案名稱
+namespace YourProjectNamespace.Controllers // 💡 這裡請維持你原本的命名空間
 {
     [ApiController]
-    [Route("api/[controller]")] // 網址：/api/booking
+    [Route("api/[controller]")]
     public class BookingController : ControllerBase
     {
-        // 用一個記憶體暫存清單當臨時資料庫，確保 Demo 當天絕對能動、絕不漏氣
-        private static readonly List<object> TempDB = new List<object>();
+        // 💡 關鍵：建立一個靜態的記憶體清單，只要 Render 沒有重啟，所有人的資料都會同步存在這！
+        private static readonly List<object> _globalBookings = new List<object>();
 
-        // 1. 前端送出預約 (POST /api/booking)
+        // 1. 這是前端網頁送出預約的 API (POST: api/booking)
         [HttpPost]
-        public IActionResult CreateAppointment([FromBody] BookingModel model)
+        public IActionResult CreateBooking([FromBody] System.Text.Json.JsonElement data)
         {
-            if (model == null || string.IsNullOrEmpty(model.Name))
+            try
             {
-                return Ok(new { success = false, message = "欄位資料不能為空！" });
+                // 將收到的預約資料塞進雲端全域清單中
+                _globalBookings.Add(data);
+
+                // 回傳成功給前端網頁
+                return Ok(new { success = true, message = "預約成功！資料已同步至雲端管理後台。" });
             }
-
-            // 模擬存入資料庫
-            TempDB.Add(new
+            catch (System.Exception ex)
             {
-                id = TempDB.Count + 1,
-                time = model.Time,
-                name = model.Name,
-                phone = model.Phone,
-                service = model.Service,
-                finalPrice = model.FinalPrice,
-                designer = model.Designer,
-                status = "待服務"
-            });
-
-            // 回傳前端 JavaScript 看得懂的小寫 success
-            return Ok(new { success = true });
+                return BadRequest(new { success = false, message = ex.Message });
+            }
         }
 
-        // 2. 後台撈取全部資料 (GET /api/booking)
+        // 2. 這是你的設計師後台撈資料的 API (GET: api/booking)
+        // 💡 你的後台管理網頁只要用 fetch(API_URL, { method: 'GET' }) 呼叫這一條，就能撈到同步更新的全部資料！
         [HttpGet]
-        public IActionResult GetAllAppointments()
+        public IActionResult GetAllBookings()
         {
-            return Ok(TempDB);
+            return Ok(_globalBookings);
         }
-    }
-
-    // 💡 直接把 Model 定義在同一個檔案最下方，就不用額外建 Model 檔案了！
-    public class BookingModel
-    {
-        public string Name { get; set; }
-        public string Phone { get; set; }
-        public string Time { get; set; }
-        public string Service { get; set; }
-        public string Designer { get; set; }
-        public int FinalPrice { get; set; }
     }
 }

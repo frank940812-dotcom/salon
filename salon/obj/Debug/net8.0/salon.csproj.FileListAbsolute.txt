@@ -75,3 +75,4 @@ C:\Users\a0938\Desktop\Web\salon\salon\obj\Debug\net8.0\refint\salon.dll
 C:\Users\a0938\Desktop\Web\salon\salon\obj\Debug\net8.0\salon.pdb
 C:\Users\a0938\Desktop\Web\salon\salon\obj\Debug\net8.0\salon.genruntimeconfig.cache
 C:\Users\a0938\Desktop\Web\salon\salon\obj\Debug\net8.0\ref\salon.dll
+C:\Users\a0938\Desktop\Web\salon\salon\obj\Debug\net8.0\salon.sourcelink.json

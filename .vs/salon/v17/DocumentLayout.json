@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "C:\\Users\\a0938\\Desktop\\Web\\salon\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{8DF08D32-0E12-444E-A667-F10A390BD3AC}|salon\\salon.csproj|c:\\users\\a0938\\desktop\\web\\salon\\salon\\controllers\\bookingcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8DF08D32-0E12-444E-A667-F10A390BD3AC}|salon\\salon.csproj|solutionrelative:salon\\controllers\\bookingcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{8DF08D32-0E12-444E-A667-F10A390BD3AC}|salon\\salon.csproj|c:\\users\\a0938\\desktop\\web\\salon\\salon\\wwwroot\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{8DF08D32-0E12-444E-A667-F10A390BD3AC}|salon\\salon.csproj|solutionrelative:salon\\wwwroot\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     }
@@ -19,6 +23,19 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "BookingController.cs",
+              "DocumentMoniker": "C:\\Users\\a0938\\Desktop\\Web\\salon\\salon\\Controllers\\BookingController.cs",
+              "RelativeDocumentMoniker": "salon\\Controllers\\BookingController.cs",
+              "ToolTip": "C:\\Users\\a0938\\Desktop\\Web\\salon\\salon\\Controllers\\BookingController.cs",
+              "RelativeToolTip": "salon\\Controllers\\BookingController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACYAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-21T07:36:52.709Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "index.html",
               "DocumentMoniker": "C:\\Users\\a0938\\Desktop\\Web\\salon\\salon\\wwwroot\\index.html",
               "RelativeDocumentMoniker": "salon\\wwwroot\\index.html",
