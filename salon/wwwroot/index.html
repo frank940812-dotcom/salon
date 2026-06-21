@@ -22,7 +22,7 @@
             min-height: 100vh;
         }
 
-        /* RWD 容器：在手機上會滿版，在桌機上會維持舒服的寬度 */
+        /* RWD 容器 */
         .client-container {
             width: 100%;
             max-width: 600px;
@@ -119,7 +119,7 @@
         <div class="subtitle">24小時即時連線智慧卡位</div>
 
         <div class="promo-card">
-            🎁 <strong>【離峰慶優惠】</strong> 每日 13:00 - 16:00 來店，結帳系統 automatic 享 <strong>85折</strong> 促銷優惠！
+            🎁 <strong>【離峰慶優惠】</strong> 每日 13:00 - 16:00 來店，結帳系統自動享 <strong>85折</strong> 促銷優惠！
         </div>
 
         <form id="reserve-form">
@@ -170,7 +170,6 @@
     </div>
 
     <script>
-        // 💡 修正 1：明確鎖定遠端 Render 的 API 完整路徑，不依賴本機環境
         const API_URL = "https://salon-h714.onrender.com/api/booking";
 
         // 1. 初始化設計師選單
@@ -200,7 +199,6 @@
             const time = document.getElementById('c-time').value;
             const service = document.getElementById('c-service').value;
 
-            // 計算離峰優惠金額
             const hour = parseInt(time.split(':')[0]);
             const isPromo = (hour >= 13 && hour <= 16);
             const originalPrice = Number(service.match(/\d+/)[0]);
@@ -210,32 +208,24 @@
                 let response = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    // 💡 修正 2：大小寫欄位雙重打包發送，徹底防呆，確保雲端 C# 後端完美對接
                     body: JSON.stringify({
-                        Name: name,
-                        name: name,
-                        Phone: phone,
-                        phone: phone,
-                        Time: time,
-                        time: time,
-                        Service: service,
-                        service: service,
-                        Designer: designer,
-                        designer: designer,
-                        FinalPrice: finalPrice,
-                        finalPrice: finalPrice
+                        Name: name, name: name,
+                        Phone: phone, phone: phone,
+                        Time: time, time: time,
+                        Service: service, service: service,
+                        Designer: designer, designer: designer,
+                        FinalPrice: finalPrice, finalPrice: finalPrice
                     })
                 });
 
                 let result = await response.json();
 
-                // 讀取 C# 回傳的結果
                 if (result.success === false) {
                     alert(`⚠️ 預約失敗！\n${result.message}`);
                     return;
                 }
 
-                // 產出客戶確認收據
+                // 成功：產出客戶確認收據
                 document.getElementById('success-box').style.display = 'block';
                 document.getElementById('receipt-details').innerHTML = `
                         📌 <strong>預約顧客：</strong> ${name}<br>
@@ -243,9 +233,16 @@
                         ✂️ <strong>指定設計師：</strong> ${designer}<br>
                         💰 <strong>現場估計金額：</strong> $${finalPrice} 元
                     `;
-                this.reset();
+
+                // 💡 修正：改成絕對安全的表單清空方式，不使用可能死掉的 this.reset()
+                document.getElementById('reserve-form').reset();
                 alert("🎉 恭喜您預約成功！資料已同步遠端處理完畢。");
 
             } catch (error) {
                 console.error("連線錯誤:", error);
-                alert("⚠️ 系統連線失敗，請確認
+                alert("⚠️ 系統連線失敗，請確認 Render 雲端後端服務是否處於啟動狀態。");
+            }
+        });
+    </script>
+</body>
+</html>
