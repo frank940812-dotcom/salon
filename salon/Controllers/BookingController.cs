@@ -1,39 +1,51 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
-namespace YourProjectNamespace.Controllers // 💡 這裡請維持你原本的命名空間
+namespace YourProjectNamespace.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     public class BookingController : ControllerBase
     {
-        // 💡 關鍵：建立一個靜態的記憶體清單，只要 Render 沒有重啟，所有人的資料都會同步存在這！
+        // 1. 全域預約紀錄暫存
         private static readonly List<object> _globalBookings = new List<object>();
 
-        // 1. 這是前端網頁送出預約的 API (POST: api/booking)
+        // 2. 關鍵：直接預設好三位設計師資料！讓後台一打開就有名單
+        private static readonly List<object> _globalDesigners = new List<object>()
+        {
+            new { name = "Andy", title = "總監 - 精修男士/極短髮" },
+            new { name = "Bella", title = "資深 - 韓系燙髮/線條染" },
+            new { name = "Chris", title = "專業 - 歐美漂染/頭皮理療" }
+        };
+
+        // 前端送出預約 (POST: api/booking)
         [HttpPost]
         public IActionResult CreateBooking([FromBody] System.Text.Json.JsonElement data)
         {
-            try
-            {
-                // 將收到的預約資料塞進雲端全域清單中
-                _globalBookings.Add(data);
-
-                // 回傳成功給前端網頁
-                return Ok(new { success = true, message = "預約成功！資料已同步至雲端管理後台。" });
-            }
-            catch (System.Exception ex)
-            {
-                return BadRequest(new { success = false, message = ex.Message });
-            }
+            _globalBookings.Add(data);
+            return Ok(new { success = true, message = "預約成功！" });
         }
 
-        // 2. 這是你的設計師後台撈資料的 API (GET: api/booking)
-        // 💡 你的後台管理網頁只要用 fetch(API_URL, { method: 'GET' }) 呼叫這一條，就能撈到同步更新的全部資料！
+        // 後台撈取預約紀錄 (GET: api/booking)
         [HttpGet]
         public IActionResult GetAllBookings()
         {
             return Ok(_globalBookings);
+        }
+
+        // 💡 3. 新增：給設計師後台撈取名冊的 API (GET: api/booking/designers)
+        [HttpGet("designers")]
+        public IActionResult GetDesigners()
+        {
+            return Ok(_globalDesigners);
+        }
+
+        // 💡 4. 新增：讓後台點擊「儲存人員」時可以寫入的 API (POST: api/booking/designers)
+        [HttpPost("designers")]
+        public IActionResult AddDesigner([FromBody] System.Text.Json.JsonElement data)
+        {
+            _globalDesigners.Add(data);
+            return Ok(new { success = true, message = "設計師新增成功！" });
         }
     }
 }
